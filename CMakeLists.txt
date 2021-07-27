@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(Polyassembly)
+project(Ahsoka)
 
 set (CMAKE_CXX_STANDARD 17)
 set (-D_GLIBCXX_USE_CXX11_ABI=0)

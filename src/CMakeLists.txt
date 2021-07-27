@@ -22,10 +22,10 @@ add_library(PolyassemblyLib SHARED
 				)
 				
 				
-add_executable(Polyassembly polyassembly.cpp)
+add_executable(Ahsoka polyassembly.cpp)
 
-target_link_libraries(Polyassembly PolyassemblyLib ${JELLYFISH_LDFLAGS_OTHER})
-target_link_libraries(Polyassembly PolyassemblyLib ${JELLYFISH_LIBRARIES})
+target_link_libraries(Ahsoka PolyassemblyLib ${JELLYFISH_LDFLAGS_OTHER})
+target_link_libraries(Ahsoka PolyassemblyLib ${JELLYFISH_LIBRARIES})
 
-#target_link_libraries(Polyassembly PolyassemblyLib ${WHATSHAP_LDFLAGS_OTHER})
-#target_link_libraries(Polyassembly PolyassemblyLib ${WHATSHAP_LIBRARIES})
+#target_link_libraries(Ahsoka PolyassemblyLib ${WHATSHAP_LDFLAGS_OTHER})
+#target_link_libraries(Ahsoka PolyassemblyLib ${WHATSHAP_LIBRARIES})
