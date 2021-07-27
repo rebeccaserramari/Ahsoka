@@ -23,7 +23,6 @@ add_compile_options(${JELLYFISH_CFLAGS_OTHER})
 #add_compile_options(${WHATSHAP_CFLAGS_OTHER})
 
 add_subdirectory(src)
-#add_subdirectory(tests)
 
 #add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS tests)
 

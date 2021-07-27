@@ -8,7 +8,6 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
-
 using namespace std;
 
 //TODO add alleles/ dict(allele, allelepath) to bubbles
@@ -124,7 +123,7 @@ unordered_map<int, vector<vector<int>>> ChainsToReadset(Graph graph ) {
 	for (auto& chain: graph.chains) {
 		count +=1 ;
 		vector<int> seq;
-		cout << "chain id: "<< chain.id << endl;
+		
 		for (auto& bubble: chain.bubbles ){
 			
 			vector<Bubble> bubblepaths;

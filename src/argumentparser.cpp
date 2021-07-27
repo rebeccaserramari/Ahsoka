@@ -72,9 +72,7 @@ void ArgumentParser::parse(int argc, char* argv[]) {
 	int c;
 	vector<char> existing_options = cmd_to_mandatory[this->subcommand];
    existing_options.insert(existing_options.end(), cmd_to_optional[this->subcommand].begin(), cmd_to_optional[this->subcommand].end());
-   cout << "options: " << this->options << endl;
-	while ((c = getopt(argc, argv, this->options.c_str())) != -1) {
-		cout << "c: " << c << endl;
+ 	while ((c = getopt(argc, argv, this->options.c_str())) != -1) {
 		// check if option exists
 		if (find(existing_options.begin(), existing_options.end(), c) != existing_options.end()) {
 				this->arguments[c] = string(optarg);			

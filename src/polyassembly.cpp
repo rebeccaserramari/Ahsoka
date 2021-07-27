@@ -12,12 +12,13 @@
 #include "alignmentstoreadset.cpp"
 #include "jellyfishkmercounter.hpp"
 #include <bits/stdc++.h>
+//#include "stdlogger.h"
 
 using namespace std; 
 
 int main(int argc, char* argv[]) {
 
-
+//	Logger logger = make_shared<StdLogger>();
 	string gfafile = "";
 	string alignmentfile = "";
 	string readfile = "";
@@ -105,6 +106,7 @@ int main(int argc, char* argv[]) {
 	
 	cout << "Step 3: Alignments read" << endl;	
 	cout << "Number of alignments: " << alignmentreader.alignments.size() << endl;	
+	//logger->log_info("Number of alignments: " + to_string(alignmentreader.alignments.size()));	
 
 	unordered_map<int, vector<vector<int>>> pathToAlleles;
 	pathToAlleles = ChainsToReadset(graph);	
@@ -115,7 +117,8 @@ int main(int argc, char* argv[]) {
 	cout << "Number of chain paths: " << pathToAlleles.size() <<  endl;
 	
 	string readsetfile = alignmentfile.substr(0,alignmentfile.find(".gaf"));
-	alignmentsToReadset(alignmentreader, graph, chainpathToAlleles, readsetfile);	
+	bool logging = false;
+	alignmentsToReadset(alignmentreader, graph, chainpathToAlleles, readsetfile,logging);	
 	cout << "Step 5: Phasing processed" << endl;
 	
 

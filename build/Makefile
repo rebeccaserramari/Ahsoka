@@ -122,17 +122,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named Polyassembly
+# Target rules for targets named Ahsoka
 
 # Build rule for target.
-Polyassembly: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Polyassembly
-.PHONY : Polyassembly
+Ahsoka: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Ahsoka
+.PHONY : Ahsoka
 
 # fast build rule for target.
-Polyassembly/fast:
-	$(MAKE) -f src/CMakeFiles/Polyassembly.dir/build.make src/CMakeFiles/Polyassembly.dir/build
-.PHONY : Polyassembly/fast
+Ahsoka/fast:
+	$(MAKE) -f src/CMakeFiles/Ahsoka.dir/build.make src/CMakeFiles/Ahsoka.dir/build
+.PHONY : Ahsoka/fast
 
 #=============================================================================
 # Target rules for targets named PolyassemblyLib
@@ -156,7 +156,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... test"
-	@echo "... Polyassembly"
+	@echo "... Ahsoka"
 	@echo "... PolyassemblyLib"
 .PHONY : help
 

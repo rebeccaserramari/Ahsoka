@@ -19,6 +19,8 @@
 #include "/home/rebecca/work/whatshap-code/whatshap/src/polyphase/clustereditingsolution.h"
 #include "/home/rebecca/work/whatshap-code/whatshap/src/polyphase/haplothreader.h"
 
+//#include "stdlogger.h"
+#include "filelogger.h"
 
 using namespace std;
 
@@ -50,26 +52,31 @@ bool vector_contains(vector<T>* vec, T elem){
     return result;
 }
 
-void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unordered_map<int, unordered_map<int, vector<vector<int>>>>& pathToAlleles, string readsetfile) {
+void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unordered_map<int, unordered_map<int, vector<vector<int>>>>& pathToAlleles, string readsetfile, bool shell_logging) {
 
+	Logger logger;
+	if (shell_logging) {
+		 //logger = make_shared<StdLogger>();
+		 logger = make_shared<FileLogger>();
+	}
+	else {
+		logger = make_shared<FileLogger>();
+	}
 	unordered_map<int, ReadSet*> newreadsets;
 	
-	
-
-	
-//	int testchain = 15;	
 	int testchain = 0;	
-//	int testchain = 7;	
-//	int testchain = 4;	
 
-
-		
+	ofstream full_output;
+	string tmp = readsetfile +"-result.txt";
+	full_output.open(tmp);
 
 	for (auto& chainmap: pathToAlleles) {
 		ReadSet* partial_readset;
 		partial_readset = new ReadSet();
 		int chainid = chainmap.first;
-		cout << "chain id: " << chainid << endl;
+		logger->log_info("chain id: " + to_string(chainid));
+		full_output << "chain id: " << chainid << endl;
+		full_output << "size of chain: "<< chainmap.second.size() << endl; 
 
 	//	if (chainid == testchain) {
 		if (chainmap.second.size() > 1) {
@@ -78,21 +85,19 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 		readset = new ReadSet();
 		for (auto& bubblemap: chainmap.second) {
 			int bubbleid = bubblemap.first;
-			cout << "bubbleid, readset size: " << bubbleid << " " << readset->size() << endl;
-			cout << "size bubblemap second " << bubblemap.second.size() << endl;
+			//logger->log_info("bubbleid, readset size: " + to_string(bubbleid) +" " + to_string(readset->size()));
+			//logger->log_info("size bubblemap second " + to_string(bubblemap.second.size()));
 			read = new Read(to_string(bubbleid),30,0,0,-1,"");
 			vector<int> allelepath;
 			int allele;
 			map<string,string> readid_to_name;
 			for (int it =0; it < bubblemap.second.size(); it++) {
-				cout << "it: " << it << endl;
 				//every path is an allele
 				allelepath = bubblemap.second.at(it);
-				cout << "allele: " << endl;
-				print(allelepath);
+				//print(allelepath);
 				allele = it;
 				//TODO: map here position(bubbleid) to allele to allelepath for the result?
-				cout << "number of alignments for chain " << chainid << ": " << alignmentreader.alignments[chainid].size() << endl;
+				logger->log_info("number of alignments for chain " +to_string(chainid)+": "+to_string(alignmentreader.alignments[chainid].size()));
 				bool read_exists = false;
 				for (int al_it=0; al_it < alignmentreader.alignments[chainid].size(); al_it ++) {
 					AlignmentPath alignment = alignmentreader.alignments[chainid].at(al_it);
@@ -102,9 +107,6 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 					if (is_subset(allelepath, alignment, false)) {
 				//	if (is_subset(allelepath, alignment, true)) {
 						read_exists = true;
-					//	string readid = to_string(al_it);
-					//	string name = alignment.name;
-					//	readid_to_name[readid] = name;
 						string readid = alignment.name;
 						//if the read does not exist yet in the readset, add it
 						if (readset->getByName(readid, 0) == 0) {
@@ -112,7 +114,6 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 							read->addVariant(bubbleid ,allele, 30);
 							read->sortVariants();
 							readset->add(read);
-				//			cout << "readset within: " << readset->toString() << endl;
 						}
 						//if it already exists, add the variant
 						else {
@@ -133,15 +134,14 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 //	}
 	
 	
-	cout << "               new readset               " << endl;
-	cout << " number of new readsets: " << newreadsets.size() << endl;
-	cout << "readsets for chain "<<chainid << ": " << newreadsets[chainid]->size() << endl;	
-	cout << "print readsets for chain "<< chainid << ": " << newreadsets[chainid]->toString() << endl;	
+	logger->log_info("               new readset               ");
+	logger->log_info(" number of new readsets: " +to_string(newreadsets.size()));
+	logger->log_info("number of readsets for chain "+to_string(chainid)+": "+to_string(newreadsets[chainid]->size()));	
+	logger->log_info("print readsets for chain "+to_string(chainid)+": "+newreadsets[chainid]->toString());	
 	
-
 	ReadSet full_testset;
 	full_testset = *newreadsets[chainid];
-	cout << "full_testset size: " << full_testset.size() << endl;
+
 //	Read* read;
 	IndexSet indices;
 	for (int i = 0; i < full_testset.size(); i++) {
@@ -155,10 +155,10 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 			indices.add(i);		
 		}	
 	}
-	cout << "indices computed" << endl;
+	logger->log_info("indices computed");
 	ReadSet* testset = full_testset.subset(&indices);	
-	cout << "testset size: " << testset->size() << endl;
-	cout << "testset: " << testset->toString() <<endl;
+	logger->log_info("testset size: "+to_string(testset->size()));
+	logger->log_info("testset: " +testset->toString());
 
 
 	/**
@@ -202,7 +202,7 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 	for (unsigned int i = 0; i < (*full_testset.get_positions()).back(); i++) {
 		to_be_added.insert(i);					
 	}
-	cout <<"number of positions to be added: " << to_be_added.size() << endl;
+	logger->log_info("number of positions to be added: " + to_string(to_be_added.size()));
 	for (auto& boundary: to_be_added) {
 
 			vector<int> allelepath;
@@ -220,54 +220,41 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 					//if allelepath is a subset of alignment
 					//alignment is AlignmentPath
 					if (is_subset(allelepath, alignment, true)) {
-						
-					//	string readid = to_string(al_it)+"_partial";
 						string readid = alignment.name;
 						//leave out alignments which start only in the overlap of the node
 						//TODO: do not leave out the complete read, only the allele in the beginning! Idea: move this to the is_subset part: if allelepath is at beginning of alignment...
 						//TODO: add the same for the last allele of the alignment						
-					//	if (alignment.firstnodelength < alignment.startpos) {						
-					//		continue;
-					//	}
 						
 						//if the read does not exist yet in the readset, add it
 						if (partial_readset->getByName(readid, 0) == 0) {
-				//		if (testset.getByName(readid, 0) == 0 && (alignment.id*100) > 90) {
-							
 							read = new Read(readid, alignment.id *100,0,0,-1,"");
 							read->addVariant(bubbleid ,allele, 30);
 							read->sortVariants();
 							partial_readset->add(read);
-				//			testset.add(read);
-						}
+							}
 						//if it already exists, add the variant
 						else {
 							
 							//don't add variant if it already exists in read
 							unordered_set<unsigned int> readpositions;
 							partial_readset->getByName(readid,0)->addPositionsToSet(&readpositions);
-					//		testset.getByName(readid,0)->addPositionsToSet(&readpositions);
 							if (readpositions.find(bubbleid) == readpositions.end() && (alignment.id*100) > 90) {
 								
 								partial_readset->getByName(readid,0)->addVariant(bubbleid ,allele, 30);
-					//			testset.getByName(readid,0)->addVariant(bubbleid ,allele, 30);
 								partial_readset->getByName(readid,0)->sortVariants();
-					//			testset.getByName(readid,0)->sortVariants();
 							}						
 						}					
 					}				
 				}
 		}	
-	
 	}
 
 /**
 	also subset the partial readset
 **/
-	cout << "partial readset size: " << partial_readset->size() << endl;
-	cout << "print partial readset before for chain "<< chainid << ": " << partial_readset->toString() << endl;	
+	logger->log_info("partial readset size: " +to_string(partial_readset->size()));
+	logger->log_info("print partial readset before for chain "+to_string(chainid)+": " +partial_readset->toString());	
 
-	
 	Read* partial_read;
 	IndexSet partial_indices;
 	for (int i = 0; i < partial_readset->size(); i++) {
@@ -280,19 +267,19 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 			partial_indices.add(i);		
 		}	
 	}
-	cout << "indices for partial readset computed" << endl;
 	ReadSet* partial_testset = partial_readset->subset(&partial_indices);	
-	cout << "print partial readset after for chain "<< chainid << ": " << partial_testset->toString() << endl;
 /**
 	partial readset subsetting ends
 **/
+
 	if (partial_testset->size() == 0) {
-		cout << "No reads in ReadSet for chain " << chainid << "!" << endl;
+		logger->log_warning("No reads in ReadSet for chain " + to_string(chainid)+"!");
 		continue;	
 	}
+	
 	ofstream rsfile;
-	readsetfile += "-chain"+to_string(chainid)+"-readset.txt";
-	rsfile.open(readsetfile);
+	string out_readsetfile = readsetfile +"-chain"+to_string(chainid)+"-readset.txt";
+	rsfile.open(out_readsetfile);
 	rsfile << "readsets for chain "<< chainid << ": " << newreadsets[chainid]->size() << endl;	
 	rsfile << "print readsets for chain "<< chainid << ": " << newreadsets[chainid]->toString() << endl;	
 	rsfile << "testset size: " << testset->size() << endl;
@@ -302,14 +289,6 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 	rsfile.close();		
 	
 	//add the new partial testset to the testset
-/*	Read* newread;
-	for (int i = 0; i < partial_testset.size(); i++) {
-		newread = partial_testset.get(i);
-		//TODO as a test		
-		if (testset.getByName(newread->getName(), 0) == 0)
-		testset.add(newread);	
-	}
-*/	
 	testset = partial_testset;
 	testset->sort();	
 	
@@ -326,22 +305,15 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 	TriangleSparseMatrix sim;
 	//parameters: min_overlap and ploidy
 	readscoring.scoreReadsetLocal(&sim, testset, 1,ploidy);
-	cout << "alignmentsToReadset done " << endl;
 	ClusterEditingSolver clustereditingsolver(sim, false);
 	ClusterEditingSolution clustering;
 	clustering = clustereditingsolver.run();
-	cout << "num clusters: " << clustering.getNumClusters() << endl;
+	logger->log_info("number of clusters: "+to_string(clustering.getNumClusters()));
 	vector<unsigned int>* pos;
 	pos = testset->get_positions();
-	cout << "readset positions: " << pos->size() << endl;	
-	for (auto& posi : *pos) {
-		cout << posi << ",";	
-	}
-	cout << endl;
+
 //	HaploThreader haplothreader(ploidy,32.0,8.0,true, 0);
 	HaploThreader haplothreader(ploidy,32.0,8.0,false, 0);
-
-
 
 	vector<Position> blockStarts; 
 	vector<vector<GlobalClusterId>> covMap;
@@ -353,24 +325,14 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 	Position end = pos->size();
 	blockStarts.push_back(start);
 	blockStarts.push_back(end);
-//  path = haplothreader.computePaths(blockStarts, covMap, coverage, consensus,genotypes);
 
-
-
-	//path = haplothreader.computePaths(start, end, covMap, coverage, consensus,genotypes);
 	int numclusters = clustering.getNumClusters();
-	cout << "numclusters: " << numclusters << endl;
 	int numpos = pos->size();
-	cout << "numpos: " << numpos << endl;
 	vector<uint32_t> pos_index;
-/*	for (int i = 0; i < numpos; i++){
-		pos_index.push_back(i);
-	}*/
 	for (auto& posi : *pos) {
 		pos_index.push_back(posi);
 	}
 	
-		//TODO: hier nochmal positions beachten
 	numpos += 1;
 	for (int i=0; i<numpos; i++){
 		unordered_map<uint32_t, uint32_t> geno ( {{0,1},{1,1}} );
@@ -391,39 +353,25 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 		}	
 	}	
 		
-	cout << "computing coverage: " << endl;
+	logger->log_info("computing coverage: ");
 	vector<map<double, double>> new_coverage(lastpos+1);
 
 	get_coverage(*testset, clustering,pos_index, new_coverage );
-	cout << "get_coverage finished" << endl;
-	cout << "new coverage size: " << new_coverage.size() << endl;
-	cout << "new coverage[0] size: " << new_coverage.at(0).size() << endl;
-/*	for (int i = 0; i < new_coverage.size(); i++) {
-		for (auto& map_entry: new_coverage.at(i)) {
-			double c_id = map_entry.first;
-			cout << " i, c_id " << i << " " << c_id << endl;
-			cout <<" i, c_id " << i << " " << c_id << " coverage " << new_coverage.at(i)[c_id] << endl;
-		}	
-	}	
-*/	cout << "compute covMap " << endl;
-	//TODO index anpassen: maximum position + 1? was ist mit positionen, die keine reads haben?
+
+	logger->log_info("computing coverage map: ");
 	vector<vector<GlobalClusterId>> coverage_map;
 	get_pos_to_clusters_map(new_coverage, ploidy, coverage_map, indexmap);
-	cout << "coverage map size: " << coverage_map.size() << endl;
 
-	cout << "computing consensus" << endl;	
+	logger->log_info("computing consensus: ");
 	vector<map<double,double>> new_consensus;
 	get_local_cluster_consensus(*testset, clustering, coverage_map, new_consensus );
-	cout << "after computing consensus " << endl;
-	cout << "consensus size " << new_consensus.size() << endl;
+	
 	for (int i =0; i< new_consensus.size(); i++) {
 		map<double,double> el = new_consensus.at(i);
 	}
 	
 
 	//transform new_coverage from vector<map<double,double>> to vector<vector<double>>
-
-//	vector<vector<double>> new_coverage_vector(numpos, vector<double>(numclusters, 0));
 	vector<vector<double>> new_coverage_vector(testset->get_positions()->size(), vector<double>());
 	for (int i = 0; i < new_coverage.size(); i++) {
 		if (new_coverage.at(i).size() == 0) {
@@ -438,38 +386,28 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 			}	
 		}
 	}	
-	cout << "transformed new coverage" << endl;
+
 	//transform new_consensus from vector<map> to vector<vector>	
-//	vector<vector<uint32_t>> new_consensus_vector(numpos, vector<uint32_t>(numclusters,0));
 	assert(new_consensus.size() == testset->get_positions()->size());
 	vector<vector<uint32_t>> new_consensus_vector(testset->get_positions()->size(), vector<uint32_t>());
 	for (int i = 0; i < new_consensus.size(); i++) {
 		for (auto& map_entry: new_consensus.at(i)) {
 			double c_id = map_entry.first;
-		//	new_consensus_vector.at(i)[c_id] = new_consensus.at(i)[c_id];
 			new_consensus_vector.at(i).push_back(new_consensus.at(i)[c_id]);
 		}	
 	}	
-	cout << "transformed new consensus" << endl;
-	
-	cout << "before compute paths " << endl;
 
-	//start = 0;
-	//end += 1;
-	//end = 3;
-	cout << "coverage_map.size(): " << coverage_map.size() << endl;
-	cout << "new_coverage_vector.size(): " << new_coverage_vector.size() << endl;
-	cout << "new_consensus_vector.size(): " << new_consensus_vector.size() << endl;
 	assert(coverage_map.size() == new_coverage_vector.size() && coverage_map.size() == new_consensus_vector.size());
-	path = haplothreader.computePaths(start, end, coverage_map, new_coverage_vector, new_consensus_vector,genotypes);
-	cout << "path length: " << path.size() << endl;	
 
+	//computing paths through the clusters	
+	logger->log_info("computing paths: ");
+	path = haplothreader.computePaths(start, end, coverage_map, new_coverage_vector, new_consensus_vector,genotypes);
+	logger->log_info("path length: " +to_string(path.size()));	
 	
 	ofstream resfile;
 	string resultfile = readsetfile + "-chain"+to_string(chainid)+"-result.txt";
 	resfile.open(resultfile);
 	
-
 	vector<vector<uint32_t>> haps;
 	for (int i=0; i< ploidy; i++) {
 		vector<uint32_t> hap;
@@ -483,10 +421,12 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 			haplo.push_back(allelepath);
 		}
 		haps.push_back(hap);	
-		cout << "haplo " << i << ": " << endl;
 		set<int> usednodes;
+		string logger_string = "";
+		full_output << "haplotype " << i << ":" << endl;
 		for (int len=0; len<haplo.size();len++) {
 			auto node = haplo[len];
+			
 			for (int ind=0;ind<node.size()-1;ind++) {
 				auto single = node[ind];
 				auto next = node[ind+1];
@@ -501,14 +441,17 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 					string secdir;
 					(tup.first.end == 1)? firstdir = '+' : firstdir = '-';
 					(tup.second.end == 1)? secdir = '+' : secdir = '-';
-					cout << single	<< '(' << firstdir << ')' << ",";
+					logger_string += to_string(single)+'('+firstdir+')'+",";
 					resfile << single	<< '(' << firstdir << ')' << ",";
+					full_output << single	<< '(' << firstdir << ')' << ",";
 					usednodes.insert(single);			
 				}
 			}
 		}
-		cout << endl;
+		logger->log_info(logger_string);
 		resfile << endl;
+		full_output << endl;
+		logger_string = "";
 		for (int len=0; len<haplo.size();len++) {
 			auto node = haplo[len];
 			for (int ind=0;ind<node.size()-1;ind++) {
@@ -521,44 +464,27 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 				string secdir;
 				(tup.first.end == 1)? firstdir = '+' : firstdir = '-';
 				(tup.second.end == 1)? secdir = '+' : secdir = '-';
-				cout << tup.first.id<<','<<firstdir << '|'<<tup.second.id << ','<<secdir << " ; ";			
+				logger_string = to_string(tup.first.id) +','+firstdir +'|' +to_string(tup.second.id) + ',' + secdir + " ; ";			
 			}
 				
 		}
-		cout<<endl;	
+		logger->log_info(logger_string);	
 	}	
 	resfile.close();
-
+	
 	for (auto& el: haps){
 		cout << "hap: " << endl;
-	//	for (auto& node: el) {
-	for (int i = 0; i < el.size(); i++) {
-		auto node = el[i];	
+		for (int i = 0; i < el.size(); i++) {
+			auto node = el[i];	
 			cout << node <<"(" << pos->at(i) << ")" <<",";		
 		}
-		cout << endl;
-	
+		cout << endl;		
 	}
 	
-	cout << "readset positions: " << pos->size() << endl;	
-	for (auto& posi : *pos) { cout << posi << ","; } 
-	cout << endl;
-
-	cout << "boundary positions: " << boundaries.size() << endl;	
-	for (auto& b : boundaries) { cout << b << ",";}
-	cout << endl;
-	
-	cout << "gaps: " << gaps.size() << endl;
-	for (auto& g: gaps) {cout << g << ',';}
-	cout << endl;
-	
-/*	cout << "to be added: " << to_be_added.size() << endl;
-	for (auto& t: to_be_added) {cout << t << ',';}
-	cout << endl;
-*/	
 	}
 	
 }
+full_output.close();
 return;
 }
 
@@ -621,20 +547,16 @@ void get_local_cluster_consensus(ReadSet& readset, ClusterEditingSolution& clust
 	//Returns a list which for every position contains a dictionary, mapping a cluster id to
    // its consensus on this position
 	map<double,vector<uint32_t>> relevant_pos;
-	//TODO auch hier num_vars nochmal korrigieren
 	int num_vars = readset.get_positions()->size();
-//	int num_vars = readset.get_positions()->back()+1;
-	cout << "num vars: " << num_vars << endl;
+
 	for (int pos = 0; pos < num_vars; pos++) {
 		for (auto& c: cov_map[pos]) {
 			relevant_pos[c].push_back(pos);		
 		}	
 	}
-	cout << "in local cluster consensus: relevant pos computed " << endl;
 	
 	vector<map<double, pair<double,double>>> clusterwise_consensus;
 	get_single_cluster_consensus_frac(readset, clustering, relevant_pos, clusterwise_consensus);
-	cout << "single cluster consensus computed " << endl;
 	vector<map<double,pair<double,double>>> whole_consensus;
 	for (int pos = 0; pos < num_vars; pos++) {
 		map<double,pair<double,double>> newdict;
@@ -643,7 +565,6 @@ void get_local_cluster_consensus(ReadSet& readset, ClusterEditingSolution& clust
 		}
 		whole_consensus.push_back(newdict);	
 	} 
-	 cout << "whole consensus size: " << whole_consensus.size() << endl;
 	for (auto& pos: whole_consensus) {
 		map<double,double> result_map;
 		for (auto& [c_id, value] : pos) {
@@ -667,15 +588,12 @@ int getIndex(vector<unsigned int>* vec, unsigned int val) {
 
 void get_single_cluster_consensus_frac(ReadSet& readset, ClusterEditingSolution& clustering, map<double,vector<uint32_t>>& rel_pos, vector<map<double, pair<double,double>>>& clusterwise_consensus) {
 	for (int i=0; i < clustering.getNumClusters(); i++ ){
-	//	cout << "in single cluster consensus, clustering id: " << i << endl;
 		map<double, pair<double,double>> cluster_consensus;
 		const vector<StaticSparseGraph::NodeId>& cluster = clustering.getCluster(i);
 		vector<uint32_t> relevant_pos = rel_pos[i];	
 		
 		//Count zeroes and one for every position
 		
-    	//vector<map<double, double>> poswise_allelecount(readset.get_positions()->size());
-    	//TODO positions fixen
     	int num_var = readset.get_positions()->back()+1;
     	vector<map<double, double>> poswise_allelecount(num_var);
     	
@@ -684,7 +602,6 @@ void get_single_cluster_consensus_frac(ReadSet& readset, ClusterEditingSolution&
 			unordered_set<unsigned int> positions;
 			read->addPositionsToSet(&positions);
 			for (auto& pos: positions) {
-			//	cout << "readid " << readid << " ,pos: " << pos << endl;
 				int allele = read->getAlleleFromPos(pos);
 				//convert read index to the corresponding index 
 				int index = -1;
@@ -727,23 +644,9 @@ void get_single_cluster_consensus_frac(ReadSet& readset, ClusterEditingSolution&
 void get_coverage(ReadSet& readset, ClusterEditingSolution& clustering, vector<uint32_t> pos_index, vector<map<double, double>>& coverage){
 	size_t num_vars = pos_index.size();
 	size_t num_clusters = clustering.getNumClusters();
-	cout << "num_vars size: " << num_vars << endl;
-	cout << "num_clusters size: " << num_clusters << endl;
 
 	//get all positions of readset and for each position, create an empty map and add to coverage vector
 	vector<unsigned int>* readset_positions = readset.get_positions();
-	cout << "num of readset pos: " << readset_positions->size() << endl;	
-	for (auto& p: *readset_positions){
-		cout << "readset p: " << p << endl;
-	}
-//	vector<unsigned int> testpositions {0,1,2,3};
-//	for (auto& p: testpositions) {
-//	for (auto& p:pos_index) {
-	
-	//TODO check this; positions where no reads exist? 
-//	for (int i = 0; i < num_vars+1; i++) {
-//		coverage.push_back(covmap);
-//	}
 
 	vector<double> coverage_sum(readset_positions->back()+1,0);
 
@@ -759,10 +662,7 @@ void get_coverage(ReadSet& readset, ClusterEditingSolution& clustering, vector<u
 			read->addPositionsToSet(&positions);
 
 			for (auto& pos: positions) {
-		//	for (int pos = 0; pos < positions.size(); pos ++) {
-		//		cout << "readid " << readid << " pos: " << pos << endl;
 				map<double,double> testmap = coverage.at(pos);
-//				cout << "testmap: " << testmap.size() << endl;
 				if (coverage.at(pos).size() == 0) {
 					coverage.at(pos)[i] = 0;				
 				}
@@ -775,13 +675,9 @@ void get_coverage(ReadSet& readset, ClusterEditingSolution& clustering, vector<u
 	for (int i = 0; i < coverage.size(); i++) {
 		for (auto& map_entry: coverage.at(i)) {
 			double c_id = map_entry.first;
-		//	cout <<" i, c_id " << i << " " << c_id << " coverage " << coverage.at(i)[c_id] << endl;
 			coverage.at(i)[c_id] = coverage.at(i)[c_id]/coverage_sum.at(i);	
-		//	cout <<" i, c_id " << i << " " << c_id << " coverage after " << coverage.at(i)[c_id] << endl;
 		}	
 	}
-
-
 }
 
 bool cmp(pair<double, double>& a, pair<double, double>& b) {
@@ -839,21 +735,18 @@ vector<unsigned int> sort_asc(map<double, double>& M) {
 void get_pos_to_clusters_map(vector<map<double, double>>& coverage, uint32_t ploidy, vector<vector<GlobalClusterId>> &covMap, map<int,int> indexmap) {
 
 	/* 	For every position, computes a list of relevant clusters for the threading
-	algorithm. Relevant means, that the relative coverage is at least 1/8 of
+	algorithm. Relevant means that the relative coverage is at least 1/8 of
 	what a single haplotype is expected to have for the given ploidy. Apart
 	from that, at least <ploidy> and at most <2*ploidy> many clusters are
 	selected to avoid exponential blow-up.
 	*/
-	cout << "coverage size: " << coverage.size() << endl;
 	vector<GlobalClusterId> sorted_cids;
 	for (int pos = 0; pos < coverage.size(); pos++) {
 		if (indexmap[pos] == -1) {
 			continue;		
 		}
 		else {
-		//	cout << "pos: " << pos << endl;
 		    sorted_cids = sort(coverage[pos]);
-		 //   cout << "sorted cids size: " << sorted_cids.size() << endl;
 		    size_t cut_off = min(uint32_t(sorted_cids.size()), 2*ploidy);
 		    for (int i = ploidy; i < min(uint32_t(sorted_cids.size()), 2*ploidy);i++) {
 				if (coverage[pos][sorted_cids[i]] < (1.0 / (8.0 * ploidy))) {
@@ -863,118 +756,8 @@ void get_pos_to_clusters_map(vector<map<double, double>>& coverage, uint32_t plo
 		    }
 		    vector<GlobalClusterId> cut_sorted_cids(cut_off);
 			copy(sorted_cids.begin(), sorted_cids.begin()+cut_off, cut_sorted_cids.begin());
-		//	cout << "cut sorted cids size: " << cut_sorted_cids.size()  << endl;
-		//	covMap.at(pos) = cut_sorted_cids;
 			covMap.push_back(cut_sorted_cids);
-		//	cout << "covMap size: " << covMap.size() << endl;
 	 	}
-	}
- 
+	} 
 	return;
-	
-
 }
-
-
-/*
-	block_num_vars = len(block_readset.get_positions())
-
-	# Check for singleton blocks and handle them differently (for efficiency reasons)
-	if block_num_vars == 1:
-
-		# construct trivial solution for singleton blocks, by basically using the genotype as phasing
-		allele_to_id = dict()
-		for allele in genotype_slice[0]:
-				if allele not in allele_to_id:
-					allele_to_id[allele] = len(allele_to_id)
-		clustering = [[] for _ in range(len(allele_to_id))]
-		for i, read in enumerate(block_readset):
-				clustering[allele_to_id[read[0].allele]].append(i)
-
-		path = [[]]
-		haplotypes = []
-		for allele in genotype_slice[0]:
-				for i in range(genotype_slice[0][allele]):
-					path[0].append(allele_to_id[allele])
-					haplotypes.append(str(allele))
-
-		return clustering, path, haplotypes, [0], [[0] for _ in range(phasing_param.ploidy)]
-
-	# Block is non-singleton here, so run the normal routine
-	# Phase I: Cluster Editing
-
-	# Compute similarity values for all read pairs
-	timers.start("read_scoring")
-	logger.debug("Computing similarities for read pairs ...")
-	similarities = scoreReadsetLocal(block_readset, phasing_param.min_overlap, phasing_param.ploidy)
-
-	# Run cluster editing
-	logger.debug(
-		"Solving cluster editing instance with {} nodes and {} edges ..".format(
-				len(block_readset), len(similarities)
-		)
-	)
-	timers.stop("read_scoring")
-	timers.start("solve_clusterediting")
-	solver = ClusterEditingSolver(similarities, phasing_param.ce_bundle_edges)
-	clustering = solver.run()
-	del solver
-
-	# Refine clusters by solving inconsistencies in consensus
-	runs_remaining = phasing_param.ce_refinements
-	last_inc_count = len(clustering) * (block_num_vars)  # worst case number
-	refine = True
-	while refine and runs_remaining > 0:
-		"""
-		Inconsistencies are positions, whre a cluster has a very ambiguous consensus, indicating that it contains reads from
-		two or more haplotypes, which differ on some SNP variants
-		"""
-		refine = False
-		runs_remaining -= 1
-		new_inc_count, seperated_reads = find_inconsistencies(
-				block_readset, clustering, phasing_param.ploidy
-		)
-		for (r0, r1) in seperated_reads:
-				similarities.set(r0, r1, -float("inf"))
-
-		if 0 < new_inc_count < last_inc_count:
-				logger.debug(
-					"{} inconsistent variants found. Refining clusters ..\r".format(new_inc_count)
-				)
-				solver = ClusterEditingSolver(similarities, phasing_param.ce_bundle_edges)
-				clustering = solver.run()
-				del solver
-            
-            
-	# Deallocate big datastructures, which are not needed anymore
-	del similarities
-
-	# Add trailing isolated nodes to single-ton clusters, if missing
-	nodes_in_c = sum([len(c) for c in clustering])
-	for i in range(nodes_in_c, len(block_readset)):
-		clustering.append([i])
-
-	timers.stop("solve_clusterediting")
-
-	# Phase II: Threading
-
-	# Assemble clusters to haplotypes
-	logger.debug("Threading haplotypes through {} clusters..\r".format(len(clustering)))
-	timers.start("threading")
-
-	# Add dynamic programming for finding the most likely subset of clusters
-	cut_positions, haploid_cuts, path, haplotypes = run_threading(
-		block_readset,
-		clustering,
-		phasing_param.ploidy,
-		genotype_slice,
-		phasing_param.block_cut_sensitivity,
-	)
-	timers.stop("threading")
-
-	# collect results from threading
-	return clustering, path, haplotypes, cut_positions, haploid_cuts
-
-*/
-
-
