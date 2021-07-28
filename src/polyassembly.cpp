@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
 	string allelefile = "";
 	string kmerfile = "";
 	string countfile = "";
+	string outfolder = "";
 
 	cerr << "Ahsoka: Haplotype assembly for diploid and polyploid genomes based on HiFi and ultra-long ONT data" << endl;
 	cerr << "author: Rebecca Serra Mari" << endl;
@@ -41,10 +42,12 @@ int main(int argc, char* argv[]) {
 	if (cmd == "phase") {
 		argparser.add_mandatory_argument('g', "genome assembly graph in gfa format, e.g. by hifiasm");
 		argparser.add_mandatory_argument('a', "alignments of ONT reads to the assembly graph, in gaf format");
+		argparser.add_mandatory_argument('o', "output folder to store output files");
 		argparser.add_optional_argument('s',"", "additional long range phasing information (StrandSeq)");	
 	}
 	else if (cmd == "only-bubbles") {
 		argparser.add_mandatory_argument('g', "genome assembly graph in gfa format, e.g. by hifiasm");		
+		argparser.add_mandatory_argument('o', "output folder");		
 	}
 
 //argparser.add_optional_argument('r', "", "file with graph unitig sequences in fastq or fasta format");
@@ -67,7 +70,7 @@ int main(int argc, char* argv[]) {
 
 	gfafile = argparser.get_arg_parameter('g');
 	alignmentfile = argparser.get_arg_parameter('a');
-
+	outfolder = argparser.get_arg_parameter('o');
 	
 	//read in graph
   	Graph graph = Graph::ReadGraph(gfafile);
@@ -81,8 +84,9 @@ int main(int argc, char* argv[]) {
 	cout << "Number of bubble chains: " << graph.chains.size() << endl;	
 	
 	//outfile: take stem of graph file name
-	string infofile = gfafile.substr(0,gfafile.find(".gfa"));    
 	ofstream bubblefile;
+//	string infofile = gfafile.substr(0,gfafile.find(".gfa"));    
+	string infofile = outfolder;
 	bubblefile.open (infofile+"-bubbleinfo.txt");
 	for (auto& chain: graph.chains) {
 		bubblefile << "chain id: " << chain.id << endl;
@@ -108,15 +112,16 @@ int main(int argc, char* argv[]) {
 	cout << "Number of alignments: " << alignmentreader.alignments.size() << endl;	
 	//logger->log_info("Number of alignments: " + to_string(alignmentreader.alignments.size()));	
 
-	unordered_map<int, vector<vector<int>>> pathToAlleles;
-	pathToAlleles = ChainsToReadset(graph);	
+	//unordered_map<int, vector<vector<int>>> pathToAlleles;
+	//pathToAlleles = ChainsToReadset(graph);	
 	
 	unordered_map<int, unordered_map<int,vector<vector<int>>>> chainpathToAlleles;
 	chainpathToAlleles = ChainsToReadsetDetailed(graph);
 	cout << "Step 4: Chain paths computed " << endl;
-	cout << "Number of chain paths: " << pathToAlleles.size() <<  endl;
+	cout << "Number of chain paths: " << chainpathToAlleles.size() <<  endl;
 	
-	string readsetfile = alignmentfile.substr(0,alignmentfile.find(".gaf"));
+//	string readsetfile = alignmentfile.substr(0,alignmentfile.find(".gaf"));
+	string readsetfile = outfolder;
 	bool logging = false;
 	alignmentsToReadset(alignmentreader, graph, chainpathToAlleles, readsetfile,logging);	
 	cout << "Step 5: Phasing processed" << endl;

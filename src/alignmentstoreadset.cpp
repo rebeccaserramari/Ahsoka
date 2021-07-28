@@ -70,7 +70,17 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 	string tmp = readsetfile +"-result.txt";
 	full_output.open(tmp);
 
-	for (auto& chainmap: pathToAlleles) {
+	//sort pathToAlleles by size of bubble chain, start with the longest ones first
+	vector<pair<int, int>> size_sorting;
+	for (auto& chainmap : pathToAlleles) {
+		size_sorting.emplace_back(chainmap.second.size(), chainmap.first);
+	}
+	sort(begin(size_sorting), end(size_sorting), greater<>());
+
+
+	for (auto& size: size_sorting) {
+		auto chainmap = make_pair(size.second, pathToAlleles[size.second]);
+	//for (auto& chainmap: pathToAlleles) {
 		ReadSet* partial_readset;
 		partial_readset = new ReadSet();
 		int chainid = chainmap.first;
