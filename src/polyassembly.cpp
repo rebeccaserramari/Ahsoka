@@ -34,8 +34,8 @@ int main(int argc, char* argv[]) {
 	ArgumentParser argparser;
 	argparser.add_command("Ahsoka [options] -g <graph.gfa> -a <alignments.gaf>");
 
-	argparser.add_subcommand("only-bubbles", {'g'},{});
-	argparser.add_subcommand("phase", {'g', 'a'}, {'s'});
+	argparser.add_subcommand("only-bubbles", {'g', 'o'},{});
+	argparser.add_subcommand("phase", {'g', 'a', 'o'}, {'s'});
 	
 	string cmd;
 	cmd = argparser.get_subcommand(argc, argv);
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
 	string infofile = outfolder;
 	bubblefile.open (infofile+"-bubbleinfo.txt");
 	for (auto& chain: graph.chains) {
-		bubblefile << "chain id: " << chain.id << endl;
+		bubblefile << "chain id: " << chain.id << "size: " << graph.getChain(chain.id).bubbles.size() << endl;
 		for (auto& bubble: graph.getChain(chain.id).bubbles) {
 			bubblefile << "bubble id: " << bubble.id << endl;
 			bubblefile << "node id: " ;
