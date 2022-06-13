@@ -2,7 +2,7 @@
 #include <sstream>
 
 #include "argumentparser.hpp"
-#include "timer.hpp"
+//#include "timer.hpp"
 
 #include "graph.hpp"
 #include "alignmentreader.hpp"
