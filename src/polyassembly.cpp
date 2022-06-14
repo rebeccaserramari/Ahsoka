@@ -6,7 +6,7 @@
 
 #include "graph.hpp"
 #include <jellyfish/mer_dna.hpp>
-#include <~/whatshap-code/src/read.h>
+#include "~/whatshap-code/src/read.h"
 #include "alignmentreader.hpp"
 #include "chainstoreadset.cpp"
 #include "alignmentstoreadset.cpp"
