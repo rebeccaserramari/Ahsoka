@@ -1,0 +1,30 @@
+Bootstrap: library
+From: ubuntu:20.04
+
+%post
+	apt-get update -y
+	apt-get install -y --no-install-recommends \
+        software-properties-common
+        add-apt-repository universe
+        apt-get update -y
+        apt-get install -y libjellyfish-2.0-dev 
+        apt-get install -y cmake
+        apt-get install -y build-essential
+        apt-get install -y pkg-config
+        apt-get install -y git
+        echo `which pkg-config`
+	# download whatshap code into home directory
+	git clone https://github.com/whatshap/whatshap.git /usr/lib/whatshap-code
+	# download Ahsoka code
+	git clone https://github.com/rebeccaserramari/Ahsoka.git
+	# install Ahsoka
+	cd Ahsoka
+	mkdir build
+	cd build
+	cmake ..
+	make
+
+
+%environment
+	# fix the locale
+	export LC_ALL=C	
