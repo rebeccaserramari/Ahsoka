@@ -10,7 +10,7 @@
 #include "alignmentreader.hpp"
 #include "chainstoreadset.cpp"
 #include "alignmentstoreadset.cpp"
-#include "jellyfishkmercounter.hpp"
+//#include "jellyfishkmercounter.hpp"
 #include <bits/stdc++.h>
 //#include "stdlogger.h"
 #include <thread>

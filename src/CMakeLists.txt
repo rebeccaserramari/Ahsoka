@@ -1,11 +1,8 @@
 add_library(PolyassemblyLib SHARED 
 				polyassembly.cpp
 				argumentparser.cpp
-				timer.cpp
 				graph.cpp
 				alignmentreader.cpp
-				jellyfishkmercounter.cpp
-				uniquekmers.cpp
 				
 				#/home/rebecca/work/whatshap-code/whatshap/src/read.cpp
 				~/whatshap-code/src/read.cpp
