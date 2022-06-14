@@ -6,13 +6,11 @@
 
 #include "graph.hpp"
 #include <jellyfish/mer_dna.hpp>
-#include "/home/rebecca/work/whatshap-code/whatshap/src/read.h"
+#include "~/whatshap-code/src/read.h"
 #include "alignmentreader.hpp"
 #include "chainstoreadset.cpp"
 #include "alignmentstoreadset.cpp"
-//#include "jellyfishkmercounter.hpp"
 #include <bits/stdc++.h>
-//#include "stdlogger.h"
 #include <thread>
 #include <mutex>
 
