@@ -7,7 +7,8 @@ add_library(PolyassemblyLib SHARED
 				jellyfishkmercounter.cpp
 				uniquekmers.cpp
 				
-				/home/rebecca/work/whatshap-code/whatshap/src/read.cpp
+				#/home/rebecca/work/whatshap-code/whatshap/src/read.cpp
+				~/whatshap-code/src/read.cpp
 				/home/rebecca/work/whatshap-code/whatshap/src/readset.cpp
 				/home/rebecca/work/whatshap-code/whatshap/src/entry.cpp
 				/home/rebecca/work/whatshap-code/whatshap/src/indexset.cpp
