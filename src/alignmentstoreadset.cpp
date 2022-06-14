@@ -21,7 +21,7 @@
 
 //#include "stdlogger.h"
 #include "filelogger.h"
-
+#include <mutex>
 using namespace std;
 
 void get_coverage(ReadSet& readset, ClusterEditingSolution& clustering, vector<uint32_t> pos_index, vector<map<double, double>>& cov);
@@ -52,8 +52,9 @@ bool vector_contains(vector<T>* vec, T elem){
     return result;
 }
 
-void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unordered_map<int, unordered_map<int, vector<vector<int>>>>& pathToAlleles, string readsetfile, bool shell_logging) {
-
+void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unordered_map<int, unordered_map<int, vector<vector<int>>>>& pathToAlleles, string readsetfile, bool shell_logging, vector<pair<int, int>>& size_sorting,std::mutex& g_display_mutex) {
+	//std::mutex g_display_mutex;
+	std::lock_guard<std::mutex> guard(g_display_mutex);
 	Logger logger;
 	if (shell_logging) {
 		 //logger = make_shared<StdLogger>();
@@ -68,14 +69,7 @@ void alignmentsToReadset(AlignmentReader& alignmentreader, Graph& graph, unorder
 
 	ofstream full_output;
 	string tmp = readsetfile +"-result.txt";
-	full_output.open(tmp);
-
-	//sort pathToAlleles by size of bubble chain, start with the longest ones first
-	vector<pair<int, int>> size_sorting;
-	for (auto& chainmap : pathToAlleles) {
-		size_sorting.emplace_back(chainmap.second.size(), chainmap.first);
-	}
-	sort(begin(size_sorting), end(size_sorting), greater<>());
+	full_output.open(tmp,std::ios_base::app);
 
 
 	for (auto& size: size_sorting) {

@@ -4,18 +4,19 @@ add_library(PolyassemblyLib SHARED
 				graph.cpp
 				alignmentreader.cpp
 				
-				/home/rebecca/work/whatshap-code/whatshap/src/read.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/readset.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/entry.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/indexset.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/polyphase/readscoring.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/polyphase/trianglesparsematrix.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/polyphase/clustereditingsolution.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/polyphase/clustereditingsolver.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/polyphase/inducedcostheuristic.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/polyphase/staticsparsegraph.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/polyphase/edgeheap.cpp
-				/home/rebecca/work/whatshap-code/whatshap/src/polyphase/haplothreader.cpp
+				
+				~/whatshap-code/src/read.cpp
+				~/whatshap-code/src/readset.cpp
+				~/whatshap-code/src/entry.cpp
+				~/whatshap-code/src/indexset.cpp
+				~/whatshap-code/src/polyphase/readscoring.cpp
+				~/whatshap-code/src/polyphase/trianglesparsematrix.cpp
+				~/whatshap-code/src/polyphase/clustereditingsolution.cpp
+				~/whatshap-code/src/polyphase/clustereditingsolver.cpp
+				~/whatshap-code/src/polyphase/inducedcostheuristic.cpp
+				~/whatshap-code/src/polyphase/staticsparsegraph.cpp
+				~/whatshap-code/src/polyphase/edgeheap.cpp
+				~/whatshap-code/src/polyphase/haplothreader.cpp
 				)
 				
 				
