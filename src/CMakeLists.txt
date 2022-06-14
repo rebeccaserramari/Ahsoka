@@ -22,6 +22,9 @@ add_library(PolyassemblyLib SHARED
 				
 add_executable(Ahsoka polyassembly.cpp)
 
+target_include_directories(PolyassemblyLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Ahsoka PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_link_libraries(Ahsoka PolyassemblyLib ${JELLYFISH_LDFLAGS_OTHER})
 target_link_libraries(Ahsoka PolyassemblyLib ${JELLYFISH_LIBRARIES})
 

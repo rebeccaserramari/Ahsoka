@@ -3,8 +3,11 @@ project(Ahsoka)
 
 set (CMAKE_CXX_STANDARD 17)
 set (-D_GLIBCXX_USE_CXX11_ABI=0)
-#add for debugging information
-#set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
+
+set(WH_PATH "/root/whatshap-code/src") 
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I$(WH_PATH)")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/root/whatshap-code/src")
 
 enable_testing()
 
@@ -21,6 +24,8 @@ add_compile_options(${JELLYFISH_CFLAGS_OTHER})
 
 #include_directories(${WHATSHAP_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/src)
 #add_compile_options(${WHATSHAP_CFLAGS_OTHER})
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(src)
 

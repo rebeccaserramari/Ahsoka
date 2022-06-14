@@ -11,13 +11,13 @@
 #include <algorithm>
 #include <cassert>
 
-#include "/home/rebecca/work/whatshap-code/whatshap/src/read.h"
-#include "/home/rebecca/work/whatshap-code/whatshap/src/readset.h"
-#include "/home/rebecca/work/whatshap-code/whatshap/src/polyphase/readscoring.h"
-#include "/home/rebecca/work/whatshap-code/whatshap/src/polyphase/trianglesparsematrix.h"
-#include "/home/rebecca/work/whatshap-code/whatshap/src/polyphase/clustereditingsolver.h"
-#include "/home/rebecca/work/whatshap-code/whatshap/src/polyphase/clustereditingsolution.h"
-#include "/home/rebecca/work/whatshap-code/whatshap/src/polyphase/haplothreader.h"
+#include "read.h"
+#include "readset.h"
+#include "polyphase/readscoring.h"
+#include "polyphase/trianglesparsematrix.h"
+#include "polyphase/clustereditingsolver.h"
+#include "polyphase/clustereditingsolution.h"
+#include "polyphase/haplothreader.h"
 
 //#include "stdlogger.h"
 #include "filelogger.h"

@@ -1,7 +1,9 @@
 Bootstrap: library
 From: ubuntu:20.04
 
+
 %post
+
 	apt-get update -y
 	apt-get install -y --no-install-recommends \
         software-properties-common
@@ -12,13 +14,16 @@ From: ubuntu:20.04
         apt-get install -y build-essential
         apt-get install -y pkg-config
         apt-get install -y git
-        echo `which pkg-config`
-	# download whatshap code into home directory
-	git clone https://github.com/whatshap/whatshap.git /usr/lib/whatshap-code
+        
+	# download whatshap code
+	git clone https://github.com/whatshap/whatshap.git /root/whatshap-code
+	cd /root/whatshap-code
+	git checkout 8f4c0c070d0b5d8e6d2c03e363965d0efb50a960
+	
 	# download Ahsoka code
-	git clone https://github.com/rebeccaserramari/Ahsoka.git
+	git clone https://github.com/rebeccaserramari/Ahsoka.git /root/Ahsoka
 	# install Ahsoka
-	cd Ahsoka
+	cd /root/Ahsoka
 	mkdir build
 	cd build
 	cmake ..
