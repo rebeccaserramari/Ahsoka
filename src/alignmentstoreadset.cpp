@@ -589,6 +589,17 @@ int getIndex(vector<unsigned int>* vec, unsigned int val) {
      }
 	return(index);
 }
+int getAlleleFromPos(Read* read, unsigned int pos) {
+	int allele = -1;
+	int readsize = read->getVariantCount();
+	for (size_t i=0; i< readsize; i++) {
+		int position = read->getPosition(i);
+		if (position == pos) {
+			allele = read->getAllele(i);	
+		}	
+	}
+	return allele;
+}
 
 void get_single_cluster_consensus_frac(ReadSet& readset, ClusterEditingSolution& clustering, map<double,vector<uint32_t>>& rel_pos, vector<map<double, pair<double,double>>>& clusterwise_consensus) {
 	for (int i=0; i < clustering.getNumClusters(); i++ ){
@@ -606,7 +617,8 @@ void get_single_cluster_consensus_frac(ReadSet& readset, ClusterEditingSolution&
 			unordered_set<unsigned int> positions;
 			read->addPositionsToSet(&positions);
 			for (auto& pos: positions) {
-				int allele = read->getAlleleFromPos(pos);
+				//int allele = read->getAlleleFromPos(pos);
+				int allele = getAlleleFromPos(read, pos);
 				//convert read index to the corresponding index 
 				int index = -1;
 				index = getIndex(readset.get_positions(), pos);
