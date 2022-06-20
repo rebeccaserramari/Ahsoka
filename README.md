@@ -3,7 +3,7 @@ Haplotype assembly of diploid and polyploid genomes based on assembly graphs and
 
 ### Installation:
 
-Ahsoka is best installed using Singularity, which allows for convenient installation of all necessary code and dependencies. You can create the Singularity container using the following command:
+Ahsoka is best installed using Singularity, which allows for convenient installation of all necessary code and dependencies. You can create the Singularity container using the `ahsoka.def` definition file provided in the `container` directory as follows:
     
     sudo singularity build ahsoka.sif ahsoka.def
 
