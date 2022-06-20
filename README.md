@@ -1,10 +1,23 @@
 # Ahsoka
 Haplotype assembly of diploid and polyploid genomes based on assembly graphs and long reads 
 
+### Installation:
+
+Ahsoka is best installed using Singularity, which allows for convenient installation of all necessary code and dependencies. You can create the Singularity container using the following command:
+    
+    sudo singularity build ahsoka.sif ahsoka.def
+
+(Note that root access is needed.)
+
+After creation of the container, you can run the program via
+
+    singularity exec ahsoka.sif Ahsoka 
+
+with every command (currently `phase` and `only-bubbles`).
 
 ### Usage:
 
-  Ahsoka phase -g \<graphfile\> -a \<alignmentfile\>
+    singularity exec ahsoka.sif Ahsoka phase -g \<graphfile\> -a \<alignmentfile\>
 
 ### Input:  
   
